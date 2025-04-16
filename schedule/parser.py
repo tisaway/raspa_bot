@@ -14,9 +14,12 @@ def get_groups(level='0'):
     groups = {tag.text: tag.get('value') for tag in option_tags}
     return groups
 
+# Удаляет из строки все символы кроме латиницы, цифр или нижнего подчёркивания и преобразует в нижний регистр
+# Принимает и возвращает строку
 def clean_string(text):
     return sub(r'\W', '', text).lower()
 
+# Получает строковое наименование группы, возвращает строковый ид группы
 # Возвращает None, если такой группы нет
 def get_group_id(group_name):
     groups = get_groups()
@@ -24,6 +27,8 @@ def get_group_id(group_name):
     group_name = clean_string(group_name)   
     return groups.get(group_name)
 
+# Получает строковое наименование группы
+# Возвращает правильно написанное строковое наименование группы
 # Возвращает None, если такой группы нет
 def validate_group_name(group_name):
     response = requests.get(URL + '/menu.php?tmenu=12&cod=0')
@@ -34,8 +39,8 @@ def validate_group_name(group_name):
             return tag.text
     return None
 
-# Получает нужную дату и номер группы
-# Возвращает html страницу с расписанием с сайта вуза
+# Получает нужную дату и номер группы (строка)
+# Возвращает результат HTTP запроса с сайта вуза
 def get_schedule_response(date, group_id):
     full_url = URL + '/rasp.php'
     date = date.strftime("%d.%m.%Y")
@@ -47,6 +52,7 @@ def get_schedule_response(date, group_id):
         )
     return response
 
+# Принимает строку типа предмета, возвращает более читаемую строку
 def type_beautifier(subject_type):
     subject_type = subject_type.replace('-Экз', '❗️ ЭКЗАМЕН ❗️')
     subject_type = subject_type.replace('-Конс', '(Консультация)')
@@ -57,14 +63,17 @@ def type_beautifier(subject_type):
     subject_type = subject_type.replace('-Прак', '(Практика)')
     return subject_type
 
+# Принимает строку, преобразовывает и возвращает объект Subject
 def get_subject(text): 
     subject = Subject()
 
     subject_data = text.split(', ')
 
+    # Окно между занятиями
     if subject_data[0] == u'\xa0':
         subject.lesson_break = True
     else:
+        # Тип предмета начинается с "-", до этого название
         tmp = subject_data.pop(0)
         type_idx = tmp.rfind('-')
         subject_name = tmp[:type_idx]
@@ -75,8 +84,11 @@ def get_subject(text):
         subject.teacher = subject_data.pop(0)
         subject.classroom = subject_data.pop(0)
         
+        # Вся остальная информация хранитя в additional_info
         additional_info = ' '.join(subject_data)
+        # Поиск ссылки на онлайн занятие
         link_match = search(r'ОНЛАЙН! \n\S+', additional_info)
+        # Если ссылка существует, то ее нужно перенести из строки additional_info в link
         if link_match:
             link = link_match.group()
             additional_info = additional_info.replace(link, '')
@@ -86,9 +98,12 @@ def get_subject(text):
         
     return subject
 
+# Принимает строку, преобразовывает и вовзращает список предметов на одну пару
 def get_subjects(text):
     subjects = []
 
+    # Во время пары может быть несколько занятий (у разных подгрупп)
+    # Они раздеяются '--------'
     for subject_text in text.split('--------'):
         subjects.append(str(get_subject(subject_text)))
     
