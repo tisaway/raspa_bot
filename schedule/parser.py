@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from re import search, sub
 from .schedule_class import *
 
-URL = 'http://inet.ibi.spb.ru/raspisan/menu.php?tmenu=1'
+URL = 'http://inet.ibi.spb.ru/raspisan'
 
 
 # Возвращает с сайта вуза словарь, где ключ - наименование группы, а значение - ее код
