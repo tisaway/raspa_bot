@@ -17,6 +17,6 @@ async def open_settings(message: Message):
 
 @menu_labeler.message(UserExist(), payload={"cmd":'resourses'})
 async def open_resourses(message: Message):
-    text_resourses = 'Сайт с расписанием:\nhttp://inet.ibi.spb.ru/raspisan/\n\nГруппа МБИ Вконтакте:\nhttps://vk.com/ibispb'
+    text_resourses = '🔗 Сайт с расписанием:\nhttp://inet.ibi.spb.ru/raspisan\n\n🔗 Группа МБИ в Вконтакте:\nhttps://vk.com/ibispb\n\n🔗 Группа МБИ в Telegram:\nhttps://t.me/ibispb_ru'
     await message.answer(text_resourses, keyboard=KEYBOARD_MENU)
 
