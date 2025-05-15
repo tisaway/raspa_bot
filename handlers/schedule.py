@@ -36,7 +36,7 @@ async def get_schedule_today(message: Message):
     await message.answer(get_schedule(day, group_name), keyboard=KEYBOARD_MENU)
 
 @schedule_labeler.message(UserDoesntExist())
-async def other_handler(message: Message):
+async def no_user_handler(message: Message):
     await start(message)
 
 @schedule_labeler.message()
